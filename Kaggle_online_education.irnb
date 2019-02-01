@@ -1,0 +1,869 @@
+{
+  "cells": [
+    {
+      "metadata": {
+        "_uuid": "99074feb236e9bf498d8c9ea7751407eb46dba37"
+      },
+      "cell_type": "markdown",
+      "source": "# Learning Data Science: The Role of Online Courses"
+    },
+    {
+      "metadata": {
+        "_uuid": "f52eeb5e167855252ada67dac00eecd42c70b34e"
+      },
+      "cell_type": "markdown",
+      "source": "## Table of Contents\n1. [Introduction](#intro)<br>\n2. [Where Do Kagglers Learn? ](#section1) <br>\n    a. [Learning Source Participation](#section1aa)<br>\n    b. [Learning Source Importance](#section1bb)<br>\n    c. [Learning Source Demographics](#section1a) <br>\n3. [Which MOOC Platforms Do Kagglers Use?](#section2) <br>\n    a. [MOOC Platform Participation](#section2a) <br>\n    b. [MOOC Platform Importance](#section2b) <br>\n    c. [MOOC Platform Demographics](#section2c)\n4. [How Do Kagglers Perceive MOOCs?](#section3)<br>\n    a. [MOOC Perception vs Traditional Education](#section3a)<br>\n    b. [MOOC Perception Demographics](#section3b)<br>\n5. [Conclusion](#outro)"
+    },
+    {
+      "metadata": {
+        "_uuid": "0cf17d211ce75b89a4915cefdf88802178242437"
+      },
+      "cell_type": "markdown",
+      "source": "# Introduction <a id=\"intro\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "b905c69a09ba0017f40215496837fe133d9cfd02"
+      },
+      "cell_type": "markdown",
+      "source": "Back in 2011, if you wanted to learn online, your options were limited. You could scour the internet for articles, blog posts, forums and the occasional video to piece together understanding of a topic of interest, but structured online courses could only really be found on MIT's [OpenCourseWare](https://ocw.mit.edu/index.htm) platform. Although MIT OCW offered a massive repository of course materials recorded from live lectures, its content was not optimized for the web. Content was uploaded en masse and “as is”, leaving users to sift through mountains of material, without a consistent structure, that often lacked key course components.\n\nThis was the learning landscape I entered when I took my first online course. I had several friends in college who were into computer science, but I didn't know anything about it myself, so I decided to try to learn the basics of programming online. Eventually, I stumbled upon an MIT OCW course called [MIT 6.0: Introduction to Computer Science and Programming](https://ocw.mit.edu/index.htm). I had never used OCW before and certainly had never heard of Python, but it seemed like as good a place to start as any. After all, it was just an intro course and with MIT's expert educators on my side how hard could it be?\n\nIt was hard. The lectures were long and there was no interactivity. The concepts made sense, but there wasn't an easy way to quickly put them into practice. The first programming assignment that required a relatively trivial calculation had me pulling out my hair, on the verge of quitting. Later I discovered that the solution required a for loop, a construction that was covered in a teacher's assistant session that was seperate from the main lectures. It was a struggle, but I learned a lot. I learned the basics of Python, but also that an archive of on campus content was not an ideal format for online education. It was the Web 1.0 of online learning. But Web 2.0 was coming fast.\n\nIn the first half of 2012, three new platforms for massive open online courses, also known as “MOOCs”, appeared: [Udacity](https://www.udacity.com/), [Coursera](https://www.coursera.org/) and [edX](https://www.edx.org/). With them came an explosion of new learning content that was more accessible and interactive than ever before, often created in partnership with top universities, all available for free. I started taking courses on all three platforms and also began writing reviews of the courses I took to help other learners decide which courses to take. In 2014, I took the first offering of MIT's [The Analytics Edge](https://www.edx.org/course/the-analytics-edge) on edX, which taught the basics of R and also introduced Kaggle, which was used as a platform to administer the final project. Since then, I've taken over 100 MOOCs, written over [100 course reviews](https://www.coursetalk.com/accounts/profile/greghamel) and participated in dozens more Kaggle competitions.\n\nThe 2018 Kaggle Machine Learning survey challenge presents an opportunity to for you to join me in exploring the intersection of two of my greatest interests: online courses and Kaggle. In particular, we will explore the role machine learning MOOCs have played in the data science education of Kagglers. Do most Kagglers learn from MOOCs? Which MOOC platforms do Kagglers use most? How do Kagglers perceive the quality of online courses versus traditional education? In this inquiry we will take a deep dive into MOOC usage by the Kaggle community, answering all of these questions and more. Along the way, I will provide my insights as a prolific MOOC-taker and explore how reality aligns with--or defies--my expectations.\n"
+    },
+    {
+      "metadata": {
+        "_uuid": "75ba67b4e8b91cda537ebb1726b94f1680d6c3c5",
+        "_execution_state": "idle",
+        "trusted": true,
+        "_kg_hide-output": true,
+        "scrolled": true,
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Loading packages\nlibrary(tidyverse)   # Data manipluation and plotting\nlibrary(plotly)      # Interactive plotting\nlibrary(IRdisplay)   # Display plots saved as html\nlibrary(gridExtra)   # Combining plots\n\n# Loading the data sources\nmultiple_choice <- read_csv(\"../input/multipleChoiceResponses.csv\")\n\n# Suppress warnings\noptions(warn=-1)\n\n# Shorten long country names\nmultiple_choice[multiple_choice$Q3 == 'United Kingdom of Great Britain and Northern Ireland','Q3'] <- \"UK\"\nmultiple_choice[multiple_choice$Q3 == 'United States of America','Q3'] <- \"USA\"\n\n# Shorten long response names for Question #39\nmultiple_choice$Q39_Part_1 <- ifelse(multiple_choice$Q39_Part_1 == \"Neither better nor worse\", \n                                     \"Similar quality\", \n                                     multiple_choice$Q39_Part_1)\n\nmultiple_choice$Q39_Part_1 <- ifelse(multiple_choice$Q39_Part_1 == \"No opinion; I do not know\", \n                                     \"No opinion\", \n                                     multiple_choice$Q39_Part_1)\n\n# Helper function: counts the number of non zero records in a column\ncount_non_zero <- function(col){\n    col <- na.omit(col)\n    return(length(col[col>0]))\n}\n\n# Helper function: converts decimal percentage to string representation\npercent_to_string <- function(percent){\n    paste(percent*100,\"%\",sep=\"\")\n}",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "9342c6b44a880d82974c58805fa47acd78435993"
+      },
+      "cell_type": "markdown",
+      "source": "# Where Do Kagglers Learn?  <a id=\"section1\"></a>\n"
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "8b96e177e4e33ab080346bcff4ce81ab8df5ab6a"
+      },
+      "cell_type": "markdown",
+      "source": "We will begin our exploration of MOOC usage in the Kaggle community by looking at the overall contribution of online courses to the data science education of Kagglers. Question 35 of the Kaggle ML & DS Survey asks: \"What percentage of your current machine learning/data science training falls under each category?\" The response categories for this question are: Self Taught, Online Courses (MOOCs), Work, University, Kaggle and Other, with an accompanying optional write-in text response. The responses to each category are numeric values indicating the percentage that each source contributed to a user's overall data science education.\n\n<br>\n\n*Note: Throughout our exploration I will use the terms \"online courses\" and \"MOOCs\" interchangeably,  the term \"Kagglers\" to refer to Kaggle users, the term \"MOOCers\" to refer to those who take online courses and the term \"non-MOOCers\" to refer to those who do not take online courses. I will treat the Kaggle survey data as representative of the Kaggle community as a whole and thus \"Kagglers\" will refer both to all Kaggle users and all survey respondents.*\n\n<br>\n\n## Learning Source Participation  <a id=\"section1aa\"></a>\n<br>\n\nWe will begin our exploration by investigating which learning sources Kagglers participate in most often. We'll consider any learning source with a non-zero value for survey question 35 to be a source that a user participates in.\n\nLet's start by creating a plot to check the number of Kagglers that use each learning source. Each time we make a plot, I will note my main expectation of what we will find ahead of time based on my knowledge of Kaggle and online learning and then contrast my expectation against the reality of our observations.\n\n#### Expectation:\n* Kaggle will be the most frequently used learning source, since this is a survey of Kaggle users."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "21ed9ab32fd2735ce670fb7c90ed3cb4cdc4ab46",
+        "_kg_hide-output": false,
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Extract Question 35 data\nmultiple_choice_Q35 <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q35\")] %>% \n                       apply(FUN= as.numeric, MARGIN=2) %>% \n                       data.frame()\n\nnumber_of_responses <- sum(!is.na(rowSums(multiple_choice_Q35)))\n\n# Rename columns\ncustom_cols <- c(\"Self_Taught\",\"MOOCs\",\"Work\",\"University\",\"Kaggle\",\"Other\",\"Text\")\ncolnames(multiple_choice_Q35) <- custom_cols\n\n# Count users per learning source\nlearning_counts <- multiple_choice_Q35 %>% \n                   apply(FUN=count_non_zero, MARGIN=2)\n\n# Create data frame for plotting\nlearning_frame <- data.frame('Learning_Source' = names(learning_counts), \n                             \"Num_Users\" = learning_counts,\n                             \"Proportion\" = percent_to_string(round(learning_counts/number_of_responses, 3)))\n\n# Custom colors for plotting\ncustom_fill <- c(\"#2ECC71\",\"#F1C40F\",\"#E67E22\",\"#E74C3C\",\"#BB8FCE\",\"#5499C7\",\"#85C1E9\")\n\n# Generate plot\np0 <- learning_frame %>% \n     ggplot(aes(x = Learning_Source, y = Num_Users )) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = custom_fill) + \n     geom_text(aes(label = Proportion), position = position_stack(vjust = 0.45)) +\n     ggtitle(\"Number of Kaggle Users by Learning Source\") +\n     xlab(\"Learning Source\") + ylab(\"Number of Users\") +\n     theme(legend.position = \"none\") +\n     scale_x_discrete(limits = custom_cols)\n\n# Convert to plotly object, save and display\ngg0 <- ggplotly(p0)\nhtmlwidgets::saveWidget(gg0, \"gg0.html\")\ndisplay_html('<iframe src=\"gg0.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "c71405c9f9f5926b56582973c7adb47b992f8b9c"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Only 45.4% of Kagglers consider Kaggle a notable learning source.\n* Self-teaching is the most important learning source, with almost 80% participation, while over 70% of Kagglers use MOOCs.\n* Roughly half of users learn data science from work and half learn from university.\n\nThe plot shows that MOOCs are the second most common learning source among Kagglers after self-study. Since self-teaching is not well-defined, there could be significant overlap between self-teaching and learning from online courses. Personally, much of my data science knowledge comes from online courses and yet I consider myself self-taught.\n\nLet's explore further by creating the same plot, looking only at Kagglers who take online courses.\n\n#### Expectation:\n* Most MOOCers will also report being self-taught."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "15346e307a6536c6e599a6ab17c038f4045c65d9",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Counts of MOOCers vs non-MOOCers\nnumber_of_MOOCers <- learning_counts[2]\nnumber_of_non_MOOCers <- number_of_responses - number_of_MOOCers\n\n# Subset of users who take online courses\nmooc_counts <- multiple_choice_Q35 %>% \n                filter(MOOCs > 0) %>% \n                select(-MOOCs) %>% \n                apply(FUN=count_non_zero, MARGIN=2)\n\n# Data frame to plot\nmooc_frame <- data.frame('Learning_Source' = names(mooc_counts), \n                         \"Num_Users\" = mooc_counts,\n                         \"Proportion\" = percent_to_string(round(mooc_counts/number_of_MOOCers, 3)))\n\n# Generate and display plot\np1 <- mooc_frame %>% \n    ggplot(aes(x = Learning_Source, y = Num_Users)) + \n    geom_bar(stat = \"identity\", color = \"black\", fill = custom_fill[c(1,3:7)]) +\n    geom_text(aes(label = Proportion), position = position_stack(vjust = 0.45)) +\n    ggtitle(\"Alternative Learning Sources of MOOCers\") +\n    xlab(\"Learning Source\") + ylab(\"Number of Users\") +\n    theme(legend.position = \"none\") + \n    scale_x_discrete(limits = names(mooc_counts))\n\ngg1 <- ggplotly(p1)\nhtmlwidgets::saveWidget(gg1, \"gg1.html\")\ndisplay_html('<iframe src=\"gg1.html\" width=650 height=550 frameborder=\"0\"></iframe>')\n",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "ab17a84d11f0f84ab60c9a25c600449859fcf8df"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* 83.4% of MOOCers also consider themselves self-taught.\n* 48.5% of MOOCers also learn from university.\n* Over half of MOOCers also learn from Kaggle.\n\nLet's continue this line of exploration by recreating the plot above for the subset of Kagglers who *do not* participate in MOOCs.\n\n#### Expectation\n* University participation among non-MOOCers will be higher than it is among those who take online courses."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "2a1d0aaba656988bfe18a4872966e7624eeb143d"
+      },
+      "cell_type": "code",
+      "source": "# Subset of users who do not take online courses\nnon_mooc_counts <- multiple_choice_Q35 %>% \n                    filter(MOOCs == 0) %>% \n                    select(-MOOCs) %>% \n                    apply(FUN=count_non_zero, MARGIN=2)\n\n# Preparing data for plotting\nnon_mooc_frame <- data.frame('Learning_Source' = names(non_mooc_counts), \n                             \"Num_Users\" = non_mooc_counts,\n                             \"Proportion\" = percent_to_string(round(non_mooc_counts/number_of_non_MOOCers, 3)))\n\n# Generate and display plot\np2 <- non_mooc_frame %>% \n    ggplot(aes(x = Learning_Source, y = Num_Users)) + \n    geom_bar(stat = \"identity\", color = \"black\", fill = custom_fill[c(1,3:7)]) +\n    geom_text(aes(label = Proportion), position = position_stack(vjust = 0.45)) +\n    ggtitle(\"Learning Sources of Non-MOOCers\") +\n    xlab(\"Learning Source\") + ylab(\"Number of Users\") +\n    theme(legend.position = \"none\") + \n    scale_x_discrete(limits = names(non_mooc_counts))\n\ngg2 <- ggplotly(p2)\nhtmlwidgets::saveWidget(gg2, \"gg2.html\")\ndisplay_html('<iframe src=\"gg2.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "ba58fe4f19e991378b334823c59465ab6cedd041"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* 53.1% of non-MOOCers learn from university--4.6 percentage points higher than university participation among MOOCers.\n* 70.7% of non MOOCers consider themselves self-taught--12.7 percentage points lower than the self-teaching rate among MOOCers.\n* MOOCers are over 50% more likely to report Kaggle as an important learning source than non-MOOCers.\n\nIn addition to these observations, close inspection of the plot suggests that non-MOOCers use fewer learning sources than online course-takers. Let's investigate further by making a boxplot showing the spread and average number of learning sources of MOOCers vs non-MOOCers.\n\n#### Expectation:\n* MOOCers will report using more learning sources on average than non-MOOCers."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "1da6394dffc9796f7bdd949c62385a3d00ee8b93"
+      },
+      "cell_type": "code",
+      "source": "# Creating dataframe to plot\nmoocers <- multiple_choice_Q35$MOOC > 0\nnum_scources <- (multiple_choice_Q35 > 0) %>% rowSums()\nlearning_frame <- data.frame(\"Num_Sources\"= num_scources, \n                             \"MOOCer\" = moocers) %>% \n                              na.omit()\n\n# Calculating averages\navg_mooc <- ((multiple_choice_Q35 %>% filter(MOOCs > 0)) > 0) %>% rowSums() %>% mean() %>% round(2)\navg_non_mooc <- ((multiple_choice_Q35 %>% filter(MOOCs == 0)) > 0) %>% rowSums() %>% mean() %>% round(2)\n\n# Generate and display plot\np3 <- learning_frame %>% \n     ggplot(aes(x = MOOCer,  y = Num_Sources)) + \n     geom_boxplot(color =\"black\",fill = custom_fill[c(3,1)]) +\n     ggtitle(\"Number of Learning Sources by MOOC Usage\") + \n     xlab(\"Uses MOOCs\") + ylab(\"Number of Learning Sources\") +\n     theme(legend.position=\"none\") + \n     annotate(\"text\", x = 1, y = avg_non_mooc, label = paste(\"Mean =\", avg_non_mooc)) +\n     annotate(\"text\", x = 2, y = avg_mooc, label = paste(\"Mean =\", avg_mooc))\n\ngg3 <- ggplotly(p3)\nhtmlwidgets::saveWidget(gg3, \"gg3.html\")\ndisplay_html('<iframe src=\"gg3.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "f565ee6ac060c46d1cc771bf05806c39043190b8"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality\n* MOOCers use about 1.3 more learning sources than non-MOOCers on average.\n\nThe plot confirms our suspicion that MOOCers tend to participate in a wider variety of learning sources than non-MOOCers. This is perhaps not a completely fair comparison, since we compared a group that we know uses a specific learning source to another that we know does not use that source--the MOOC-taking subgroup can have as many as 7 total learning sources, while non-MOOCers are limited to 6. Still, it shows that MOOCers do use more learning sources on average. \n\n<br>\n## Learning Source Importance <a id=\"section1bb\"></a>\n<br>\n\nThus far we have only looked at whether Kagglers use a learning source or not, ignoring the degree to which each source contributes to total learning. Next, we'll explore which learning sources Kagglers consider most important, by investigating which sources contributed the most to total data science education.\n\nFirst we will make side by side boxplots showing the percentage of contribution of each learning source. We'll leave out the \"Other\" and \"Text\" fields, since relatively few users listed those as being important.\n\n#### Expectation:\n* MOOCs will have a lower average learning contribution than other learning sources, since we know MOOC users spread their time across many learning sources."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "96a565dd320790956283170aff1e8966e0e08529"
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np4 <- multiple_choice_Q35 %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\") %>%\n        ggplot( aes(x = Learning_Method, y = Percentage)) + \n        geom_boxplot(position = \"dodge\", color = \"black\", fill = custom_fill[c(1:5)]) + \n        ylim(c(0,100)) + \n        theme(legend.position = \"none\") + \n        ggtitle(\"Learning Source Importance\") +  \n        xlab(\"Learning Method\") + ylab(\"Percentage of Total Learning\") +\n        stat_summary(fun.y = mean, geom = \"text\", label = \"--Mean--\", size = 3) +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5])\n\ngg4 <- ggplotly(p4)\nhtmlwidgets::saveWidget(gg4, \"gg4.html\")\ndisplay_html('<iframe src=\"gg4.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "9f5e213a51f37e92a9b8a5539363abfbb30575a0"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOCs had the second highest learning contribution of all sources.\n* University only contributed 18% to total data science education on average.\n* Self-teaching contributed the most to data science education.\n* Kaggle contributed relatively little to overall total science education.\n\nThe plot seems to conflict with our earlier observation that MOOC students tend to use a broader range of learning sources than non-MOOCers. If MOOCers use a broad range of educational sources, we might expect MOOCs to contribute a relatively amount to total education.\n\nThis conflict reveals a potential problem with the plot: it includes Kagglers who *don't* use each learning source along with those that do, which may give a warped representation of the importance of each learning source. We aren't really interested in how important a learning source is to people who don't use it--we're interested in how important each source is to those who actually *do* use them. Let's remake the last plot, filtering out zero valued \"non use\" responses.\n\n#### Expectation:\n* MOOCs will have a lower average learning contribution than university and work."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "e694415158d6c939ce5fe4cfae6a2c0d25638538"
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np5 <- multiple_choice_Q35 %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\") %>%\n        filter(Percentage > 0) %>%\n        ggplot( aes(x = Learning_Method, y = Percentage)) + \n        geom_boxplot(position = \"dodge\", color = \"black\", fill = custom_fill[c(1:5)]) + \n        ylim(c(0,100)) + \n        theme(legend.position = \"none\") + \n        ggtitle(\"Learning Source Importance (non-users removed)\") +  \n        xlab(\"Learning Method\") + ylab(\"Percentage of Total Learning\") +\n        stat_summary(fun.y = mean, geom = \"text\", label = \"--Mean--\", size = 3) +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5])\n\ngg5 <- ggplotly(p5)\n\nhtmlwidgets::saveWidget(gg5, \"gg5.html\")\ndisplay_html('<iframe src=\"gg5.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "95ee4087b0c29270f6c976f39bb2cc3bb868d7c2"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOCs contribute about 35% of overall data science education on average for those who use them.\n* University contributes a similar amount to data science education as self-teaching and MOOCs among those who use each.\n\nThe new plot shows that MOOCs did not contribute more than University among Kagglers who actually participated in each. Still, the learning contribution of MOOCs is higher than I expected relative to university and work. \n\nLet's see how the picture changes when we separate MOOCers from non-MOOCers. Given that we know non-MOOCers use fewer learning sources on average, we would expect them to concentrate heavily in the few learning sources they do use.\n\n#### Expectation:\n* The average learning contribution of university will be higher for non-MOOCers than it is for MOOCers."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "ed892c6f940e955439b6d4dae86c99cffdc8c7af",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np5a <- multiple_choice_Q35 %>% \n        mutate(MOOCer = ifelse(MOOCs > 0, \"MOOCer\", \"Non-MOOCer\")) %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\",-MOOCer) %>%\n        filter(Percentage > 0) %>%\n        ggplot( aes(x = Learning_Method, y = Percentage)) + \n        geom_boxplot(position = \"dodge\", color = \"black\", fill = custom_fill[c(1:5,1,3:5)]) + \n        ylim(c(0,100)) + \n        ggtitle(\"Learning Source Importance of MOOCers vs Non-MOOCers\") + \n        xlab(\"Learning Method\") + ylab(\"Percentage of Total Learning\") +\n        stat_summary(fun.y = mean, shape = 1) + \n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5]) +\n        theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +\n        facet_wrap(~MOOCer)\n\ngg5a <- ggplotly(p5a)\nhtmlwidgets::saveWidget(gg5a, \"gg5a.html\")\ndisplay_html('<iframe src=\"gg5a.html\" width=800 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "5c245f174eb464f857fa70e8eed328d10deb7ffe"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* The average learning contribution of university for non-MOOCers is nearly double that reported by MOOCers.\n* All learning sources (aside from MOOCs) have higher learning contributions among non-MOOCers.\n\nThe plot confirms that those who do not take online courses tend to rely more heavily on a few learning sources than MOOCers, who tend to spread learning out across more sources. This should come as no surprise given non-MOOCers have fewer total learning sources between which they distribute their time.\n\nNow that we have an idea of the overall participation rates and importance of learning sources, let's investigate how learning source usage differs among different subsets of the Kaggle community."
+    },
+    {
+      "metadata": {
+        "_uuid": "1d9eabfd33bc90a9bfc05984fe1c4930d2e0fa7d"
+      },
+      "cell_type": "markdown",
+      "source": "## Learning Source Demographics <a id=\"section1a\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "61111bc4008cf512dc05281943dae245c17d98df"
+      },
+      "cell_type": "markdown",
+      "source": "### Learning Sources and Gender "
+    },
+    {
+      "metadata": {
+        "_uuid": "63d131c90583589af35452a6867094358e89eb0f"
+      },
+      "cell_type": "markdown",
+      "source": "First let's break learning source participation down by gender. In particular, we'll look at the learning source participation of males vs females. Before we make a plot, let's check how many respondents fall into each group."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "3490e455345a391087da9a3a126e684a91232c5f"
+      },
+      "cell_type": "code",
+      "source": "# Display table of Gender counts\nmultiple_choice_Q35 %>% \n        mutate(Gender = multiple_choice[2:nrow(multiple_choice),]$Q1) %>% \n        filter(Gender == \"Male\" | Gender == \"Female\") %>% \n        group_by(Gender) %>% \n        summarize(Count = n(), \n                  Proportion_of_Users = percent_to_string(round(Count/(nrow(multiple_choice_Q35)-1),3)))",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "3cdee0971ef8447e50987f6755bea43987c2b397"
+      },
+      "cell_type": "markdown",
+      "source": "Men accounted for over 80% of respondents but there were still more than 4000 women in the survey. Now let's compare learning source participation with a plot.\n\n#### Expectation:\n* Learning source participation does not vary by gender."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "deedb9edf92829a27f256a8767de842ea6a6dfa5",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np6 <-   multiple_choice_Q35 %>% \n        mutate(Gender = multiple_choice[2:nrow(multiple_choice),]$Q1) %>% \n        filter(Gender==\"Male\" | Gender==\"Female\") %>% select(-Text) %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\", -\"Gender\") %>%\n        group_by(Gender,Learning_Method) %>% \n        summarize(Counts = sum(Percentage > 0, na.rm=TRUE), \n                  Percent_Participation = round(Counts/sum(Percentage > -1, na.rm=TRUE),3),\n                  Percent_Participation_str = percent_to_string(Percent_Participation)) %>% \n        ggplot(aes(x = Learning_Method, y = Percent_Participation)) + \n        geom_bar(stat = \"identity\", color = \"black\", fill = custom_fill[c(1:6,1:6)]) +\n        geom_text(aes(label=Percent_Participation_str), \n              position = position_stack(vjust = 0.45), size = 3) +\n        ggtitle(\"Learning Source Participation by Gender\") +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:6]) +\n        theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) +\n        theme(axis.title.y = element_blank()) +\n        facet_wrap(~Gender)\n\ngg6 <- ggplotly(p6)\nhtmlwidgets::saveWidget(gg6, \"gg6.html\")\ndisplay_html('<iframe src=\"gg6.html\" width=800 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "ef574ccda417821b286e613ff829950facf45a9e"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Male and female Kagglers both learn from MOOCs and work at similar rates.\n* A greater proportion of males learn from self-study and Kaggle.\n* A greater proportion of females learn from university.\n\nLet's break this comparison down further by looking at the importance of each learning source, again filtering out non-participants.\n\n#### Expectation:\n* Learning source importance does not vary by gender."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "cb050f71690e6ce8a6708761dadcca6e4a2e628f",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np7 <-   multiple_choice_Q35 %>% \n        mutate(Gender = multiple_choice[2:nrow(multiple_choice),]$Q1) %>% \n        filter(Gender == \"Male\" | Gender == \"Female\") %>% select(-Text) %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\", -\"Gender\") %>%\n        filter(Percentage > 0) %>% \n        ggplot(aes(x = Learning_Method, y = Percentage)) + \n        geom_boxplot(position = \"dodge\", color=\"black\", fill = custom_fill[c(1:5,1:5)]) + \n        ggtitle(\"Learning Source Importance by Gender\") +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5]) +\n        theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) + \n        theme(axis.title.y = element_blank()) +\n        stat_summary(fun.y = mean, shape = 1) + \n        facet_wrap(~Gender)\n\ngg7 <- ggplotly(p7)\nhtmlwidgets::saveWidget(gg7, \"gg7.html\")\ndisplay_html('<iframe src=\"gg7.html\" width=800 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "f3aaeb178830860966d4c8bd0cb17ee9f991ef15"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality\n* Learning source importance is generally similar across genders, but the median contribution of university is 40% for females and 30% for males.\n\nOverall, gender appears to have little relation to Kagglers' use of online courses. The biggest takeaway is that female Kagglers participate in university at higher rates than males and tend to attribute more of their total learning to university. Since the survey data is limited to Kaggle users, however, we can't reasonably use these results to make inferences about the greater data science community outside of Kaggle.\n"
+    },
+    {
+      "metadata": {
+        "_uuid": "3022ed0c48f9a95e3a38375c91b1d135a8859df9"
+      },
+      "cell_type": "markdown",
+      "source": "### Learning Sources and Age <a id=\"section1b\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "7b939866aefe670223ecbae531d63a64a5d77bce"
+      },
+      "cell_type": "markdown",
+      "source": "Next, we will investigate how learning source participation varies with age. First let's check the breakdown of how many respondents fall into each age group."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "933a4ea09acd98b4260da1f3c2f18039d5bba37d"
+      },
+      "cell_type": "code",
+      "source": "# Display table of Kagglers by age group\nmultiple_choice_Q35 %>% \n    mutate(Age = multiple_choice[2:nrow(multiple_choice),]$Q2) %>%\n    group_by(Age) %>% \n    summarize(Count = n(), \n              Proportion_of_Users = percent_to_string(round(Count/(nrow(multiple_choice_Q35)-1),3)))",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "99ccf5772c94069fbd69bab4883bcda02242849d"
+      },
+      "cell_type": "markdown",
+      "source": "Most users fall in the 18 to 34 year age brackets, with each successive age bracket beyond 34 having fewer users. Some of the older age groups have relatively few respondents so plots of those groups may exhibit more variability than the plots that include many responses.\n\nLet's go ahead and create a plot of learning source participation by age.\n\n#### Expectation:\n* MOOC participation will be more common among younger Kagglers.\n"
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "30a83f47b1b9462751dbf173798b44d7a58a359c"
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np8 <-   multiple_choice_Q35 %>% mutate(Age = multiple_choice[2:nrow(multiple_choice),]$Q2) %>% \n        select(-Text) %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\", -\"Age\") %>%\n        group_by(Age,Learning_Method) %>% \n        summarize(Counts = sum(Percentage > 0, na.rm=TRUE), \n                  Percent_Participation = round(Counts/sum(Percentage > -1, na.rm=TRUE),2),\n                  Percent_Participation_str = percent_to_string(Percent_Participation)) %>%\n        ggplot(aes(x = Learning_Method, y = Percent_Participation)) + \n        geom_bar(stat = \"identity\", color = \"black\", fill=rep(custom_fill[c(1:5)],12)) +\n        geom_text(aes(label = Percent_Participation_str), position = position_stack(vjust = 0.45), size= 3) +\n        ggtitle(\"Learning Source Participation by Age\") +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5]) +\n        theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) +\n        theme(axis.title.y = element_blank()) +\n        facet_wrap(~Age)\n\ngg8 <- ggplotly(p8)\nhtmlwidgets::saveWidget(gg8, \"gg8.html\")\ndisplay_html('<iframe src=\"gg8.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "c00f5516f7765fd0924cea41ec379404bee340c3"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOC participation is fairly consistent across age groups, with between 68% and 74% participation for every age group under 60.\n* Participation in learning from work is relatively low for users aged 18-24.\n\nIt makes sense that the youngest Kagglers are less likely to learn from work than the average user, since younger Kagglers may not yet be in the workforce. \n"
+    },
+    {
+      "metadata": {
+        "_uuid": "6a45136bb6b3905aefeffbf57b151b119c061e4d"
+      },
+      "cell_type": "markdown",
+      "source": "### Learning Sources and Country <a id=\"section1c\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "34c38456c4004f85ae90a8ad27155ee722d59291"
+      },
+      "cell_type": "markdown",
+      "source": "Next, we will investigate learning source participation by country. The survey data includes responses from 147 countries, but we will filter down to the 20 countries with the most respondents in the interest of readibility. We'll also exclude the responses \"Other\" and \"I do not wish to disclose my location\".\n\n#### Expectation:\n* I have no idea what to expect!"
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "28eb23266291db3091f8850017d3377017411b7b"
+      },
+      "cell_type": "code",
+      "source": "# Extract countries with most responses\ntop_countries <- multiple_choice_Q35 %>% \n        mutate(Country = multiple_choice[2:nrow(multiple_choice),]$Q3) %>%\n        group_by(Country) %>% \n        filter(Country != \"Other\" & Country != \"I do not wish to disclose my location\") %>% \n        summarize(Count = n(), Proportion_of_Users = Count/(nrow(multiple_choice_Q35)-1)) %>% \n        arrange(desc(Count)) %>% \n        head(20)",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "0d2fe35469be769efd4efffa18138eda582b0ea3"
+      },
+      "cell_type": "code",
+      "source": "# Generate and display plot\np9 <-   multiple_choice_Q35 %>% mutate(Country = multiple_choice[2:nrow(multiple_choice),]$Q3) %>% \n        filter(Country != \"Other\" & Country != \"I do not wish to disclose my location\") %>% \n        select(-Text) %>%\n        gather(key = \"Learning_Method\", value = \"Percentage\", -\"Country\") %>%\n        group_by(Country,Learning_Method) %>% \n        summarize(Counts = sum(Percentage > 0, na.rm=TRUE), \n                  Percent_Participation = round(Counts/sum(Percentage > -1, na.rm=TRUE),2),\n                  Percent_Participation_str = percent_to_string(Percent_Participation)) %>%\n        filter(Country %in% top_countries[[\"Country\"]]) %>%\n        ggplot(aes(x = Learning_Method, y = Percent_Participation)) + \n        geom_bar(stat = \"identity\", color = \"black\", fill = rep(custom_fill[c(1:5)],20) ) +\n        geom_text(aes(label=Percent_Participation_str), position = position_stack(vjust = 0.45), size=2) +\n        ggtitle(\"Learning Source Participation by Country\") +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5]) +\n        theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) +\n        theme(axis.title.y = element_blank()) +\n        facet_wrap(~Country)\n\ngg9 <- ggplotly(p9)\nhtmlwidgets::saveWidget(gg9, \"gg9.html\")\ndisplay_html('<iframe src=\"gg9.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "eb814ca29c768d8a0875d9e611be33eadb338c88"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOC participation is close to 70% in many countries.\n* Nigeria has the highest MOOC participation rate at 89% followed by India at 82%.\n* Japan has a low MOOC participation rate of 39%--25 percentage points lower than the next lowest country.\n\nInterestingly, Japan--the country that uses MOOCs the least--also has the lowest participation in learning data science from university. This low MOOC participation rate suggests Japan could be a growth market for online course platforms."
+    },
+    {
+      "metadata": {
+        "_uuid": "591889c4cecb4806798ac98c6b432b853dba4e96"
+      },
+      "cell_type": "markdown",
+      "source": "### Learning Sources by Programming Language <a id=\"section1c\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "9853ff1e379f7b408b71b65e44662c57372ccfc8"
+      },
+      "cell_type": "markdown",
+      "source": "To conclude our exploration of MOOC participation, let's compare learning source usage by programming language preference. As a prolific MOOC-taker I'm aware that most data science courses use Python or R, so I'm curious whether there is any appreciable difference in MOOC participation rates according to Kagglers' most-used programming language.\n\nFirst, let's look at the number of Kagglers that use each language."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "30eb8226111bc95b592ec222d88b4f485517857c"
+      },
+      "cell_type": "code",
+      "source": "# Get and display table of language use\ntop_languages <- multiple_choice[2:nrow(multiple_choice),]$Q17 %>% \n                na.omit() %>% \n                table() %>% \n                data.frame() %>% \n                arrange(desc(Freq))\n\ncolnames(top_languages) <- c(\"Programming Language\", \"Number of Users\")\ntop_languages",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "a2c6165d6f0b4edffb5a9c7037ae2d427c1181ce"
+      },
+      "cell_type": "markdown",
+      "source": "As expected, Python and R dominate as the most commonly used languages among Kagglers. Now let's make a plot of participation rates.\n\n#### Expectation:\n* Python and R users will have higher MOOC participation rates than users of other languages, since Python and R are the most common languages used to teach data science MOOCs."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "6a55c5733fe0c36f35ea89735bfd47a2bdd33f83"
+      },
+      "cell_type": "code",
+      "source": "# Create data frame grouped by langauge to plot\nby_language <- multiple_choice_Q35 %>% \n                mutate(Language = multiple_choice[2:nrow(multiple_choice),]$Q17) %>% \n                select(-Text) %>% na.omit() %>%\n                gather(key = \"Learning_Method\", value = \"Percentage\", -\"Language\") %>% \n                group_by(Language,Learning_Method) %>% \n                summarize(Counts = sum(Percentage > 0, na.rm=TRUE), \n                      Percent_Participation = round(Counts/sum(Percentage > -1, na.rm=TRUE),2),\n                      Percent_Participation_str = percent_to_string(Percent_Participation))\n\n# Generate and display plot\np10 <-  by_language %>% \n        filter(Language %in% top_languages[[\"Programming Language\"]][1:16]) %>%\n        ggplot(aes(x = Learning_Method, y = Percent_Participation)) + \n        geom_bar(stat = \"identity\", color = \"black\", fill = rep(custom_fill[c(1:5)], 16)) +\n        geom_text(aes(label = Percent_Participation_str), position = position_stack(vjust = 0.45), size = 3) +\n        ggtitle(\"Learning Source Participation by Programming Language\") +\n        scale_x_discrete(limits = names(multiple_choice_Q35)[1:5]) +\n        theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) +\n        theme(axis.title.y = element_blank()) +\n        facet_wrap(~Language)\n\ngg10 <- ggplotly(p10)\nhtmlwidgets::saveWidget(gg10, \"gg10.html\")\ndisplay_html('<iframe src=\"gg10.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "bd84e05eb2616a6d07fbbd8e5fe036e37bb100e1"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOC participation rates are close to 70% across most languages, with 74% of Python users, 71% of R users and 73% of SQL users participating in MOOCs.\n* Scala users have highest participation in MOOCs at 78% and bash users have the lowest at 50%."
+    },
+    {
+      "metadata": {
+        "_uuid": "f522cf43c4ea7f175db64bd2ea2ad8aed49f7987"
+      },
+      "cell_type": "markdown",
+      "source": "### Where Do Kagglers Learn: Key Findings"
+    },
+    {
+      "metadata": {
+        "_uuid": "d14bcf7f6d0b56ba2adc86fa0cfd56e8a3a07736"
+      },
+      "cell_type": "markdown",
+      "source": "This concludes our exploration of where Kagglers learn. Let's summarize our key findings thus far:\n\n*  Self-teaching is the most common learning method among Kagglers. \n* About 70% of Kagglers use MOOCs and MOOC use is relatively consistent across gender and age.\n* MOOCers tend to use many different learning sources, while non-MOOCers tend to use a smaller number of learning sources more heavily.\n* The biggest demographic differences in MOOC usage we discovered was variation across countries. This suggests country-related factors such as income, language and access to traditional education may play an important role in MOOC participation.\n\n"
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "5b2056d9b284bc004a17634124d8f4ed9793c558"
+      },
+      "cell_type": "markdown",
+      "source": "# Which MOOC Platforms Do Kagglers Use? <a id=\"section2\"></a>"
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "5fa9c9c9385d597a33fe437085bc7ed1d621ea4b"
+      },
+      "cell_type": "markdown",
+      "source": "In the first section, we learned that the majority of Kagglers use online courses for at least part of their data science education and that MOOC use was consistent across many subgroups within the community. In this section, we will explore which MOOC platforms Kagglers use. Specifically, we will look at survey questions 36 and 37, which read: \"Which (MOOC) platforms have you used?\" and \"On which platforms have you spent the most time?\" respectively.\n\nFrom my personal experience, I know that Coursera is both one of the oldest MOOC platforms and has the largest catalog of free university-style courses of any platform. It was also the first platform I'm aware of that offered data science courses taught by industry experts such as Andrew Ng's [machine learning course](https://www.coursera.org/learn/machine-learning) and Geoffrey Hinton's (now retired) course \"Neural Networks for Machine Learning\" which were both available in 2012. Consequently, I expect Coursera to lead in terms of overall MOOC platform popularity, with the other long-running platforms edX and Udacity rounding out the top three. I have used many other platforms in the past, including [DataCamp](https://www.datacamp.com/), [Codeacademy](https://www.codecademy.com/) and Kaggle's learning materials, so it will be interesting to how these platforms stack up against the old guard.\n\n### MOOC Platform Participation <a id=\"section2a\"></a>\n\n<br>\n\nLet's begin our investigation of MOOC platforms by plotting the overall participation rate of each platform.\n\n#### Expectation:\n* Coursera will have the highest participation rate, followed by edX and Udacity."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "bf8aae8abecc82325b3fa9bd6cf976645c6d3b63"
+      },
+      "cell_type": "code",
+      "source": "# Extract survey question 36 data\nmultiple_choice_Q36 <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q36\")][,1:13]\n\n# Helper function to get new column names from data\nnon_na_name <- function(col){\n    name <- col %>% na.omit()\n    return(name[1])\n}\n\n# Extract new column names from column data values\nMOOC_cols <- apply(multiple_choice_Q36, FUN = non_na_name, MARGIN = 2)\nMOOC_cols[8] <- \"Google Dev\"  # Shorten 'developers.google.com'\nMOOC_cols[11] <- \"University\" # Shorten 'Online University Courses'\n\n# Rename columns\nnames(multiple_choice_Q36) <- MOOC_cols[1:13]\n\n# Convert values to 0 and 1\nmultiple_choice_Q36[!is.na(multiple_choice_Q36)] <- 1 # Fill Non NA values with 1\nmultiple_choice_Q36[is.na(multiple_choice_Q36)] <- 0 # Fill NA with 0\nmultiple_choice_Q36 <- multiple_choice_Q36 %>% apply(FUN = as.numeric, MARGIN = 2)\n\nnum_moocers <- sum(rowSums(multiple_choice_Q36) > 0)\n\n# Prepare data frame for plotting\nplot_frame <- multiple_choice_Q36 %>% \n                colSums() %>% \n                data.frame() \n\ncolnames(plot_frame) <- \"Num_Users\"\n\nplot_frame[\"Platform\"] <- row.names(plot_frame)\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Num_Users\"]/nrow(multiple_choice_Q36),2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\n# Extract sorted columns for section 2 plotting\nsection2_cols <- plot_frame %>% \n                  arrange(desc(Num_Users)) \n\n# Add extra colors to color pallete from section 1 for use in section 2\nextra_fill <- c(\"#A3E4D7\",\"#F5CBA7\",\"#D5DBDB\",\"#D5DBDB\",\"#D5DBDB\", \"#D5DBDB\")\ntotal_fill <- c(custom_fill,extra_fill)\n\n# Associate colors with MOOC platforms\nnames(total_fill) <- section2_cols[[\"Platform\"]]\nnames(total_fill)[4] <- \"Kaggle.Learn\"\nnames(total_fill)[11] <- \"Google.Dev\"\n\n# Generate and display plot\np11 <- plot_frame %>%    \n     ggplot(aes(x = Platform, y = Num_Users)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = total_fill) + \n     ggtitle(\"Number and Proportion of Kaggle Users per Platform\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size=3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) + \n     xlab(\"Platform\") + ylab(\"Number of Users\") +\n     scale_x_discrete(limits = section2_cols[[\"Platform\"]])\n\ngg11 <- ggplotly(p11)\nhtmlwidgets::saveWidget(gg11, \"gg11.html\")\ndisplay_html('<iframe src=\"gg11.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "83017a73a1e963be703c62c96490f64316b47e8d"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* 38% of Kagglers use Coursera, more the double the usage rate of any other MOOC platform.\n* Five MOOC platforms form a \"second tier\" below Coursera with usage rates between 15% and 18%: Udemy, DataCamp, Kaggle Learn, Udacity and edX.\n\nInterestingly, Udemy and DataCamp--two platforms that primarily offer paid content--are used slightly more than Udacity and edX, which are perhaps the most similar platforms to Coursera. Since use of one MOOC platform does not exclude you from using others, it could be that while many MOOCers use Coursera, they also use one or more platforms from the second tier.\n\nLet's check how many platforms MOOCers on Kaggle use, excluding the responses of \"Other\" and \"None\"."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "e76af1cda81989407b0767047d2d82f8e2f9b833",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Remove uninteresting categories\nmultiple_choice_Q36 <- multiple_choice_Q36 %>% \n                        data.frame() %>% \n                        select(c(-Other, -None))",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "b76fecb90fa761a23cf12bc3d6f0f1bbf3c6f27e",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Create dataframe for plotting\nmooc_users <- multiple_choice_Q36 %>% \n                filter(rowSums(multiple_choice_Q36) > 0)\n\nmooc_users[\"Number_of_Platforms\"] <- rowSums(mooc_users)\n\n# Custom color gradient for plot\ncustom_grad <- c(\"#EAFAF1\",\"#D5F5E3\",\"#ABEBC6\",\"#82E0AA\",\"#58D68D\",\"#2ECC71\",\"#28B463\",\"#239B56\")\n\n# Generate and display plot\np13 <- mooc_users %>% \n    group_by(Number_of_Platforms) %>% \n    summarize(Counts = n(), \n              Percentage = round(Counts/sum(nrow(mooc_users)),2),\n              Prop_str = percent_to_string(Percentage)) %>%\n     filter(Number_of_Platforms < 9) %>%\n     ggplot(aes(x = Number_of_Platforms, y = Counts)) + \n     geom_bar(stat = \"Identity\", color = \"black\", fill = custom_grad) + \n     ggtitle(\"Number of MOOC Platforms Used by Kagglers\") + \n     xlab(\"Number of Platforms\") + ylab(\"Number of Users\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) + \n     scale_x_continuous(breaks = 1:8)\n\ngg13 <- ggplotly(p13)\nhtmlwidgets::saveWidget(gg13, \"gg13.html\")\ndisplay_html('<iframe src=\"gg13.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "42303c4ab17f2d94dc7062e6e6cc526a732d349e"
+      },
+      "cell_type": "markdown",
+      "source": "#### Observations\n* Over 70% of MOOCers on Kaggle use multiple online course platforms.\n* Roughly 30% of MOOCers stick with just one platform.\n\nBefore we look further at users of multiple MOOC platforms, let's make a plot to investigate which sites single-platform learners use the most.\n\n#### Expectation:\n* Coursera will dominate in participation among single-platform users."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "e5e93c8e80be5faa8c0bb6f5446641508e8350f4"
+      },
+      "cell_type": "code",
+      "source": "num_single_moocers <- sum(rowSums(multiple_choice_Q36) == 1)\n\n# Create dataframe for plotting\nplot_frame <- multiple_choice_Q36 %>% \n                filter(rowSums(multiple_choice_Q36) == 1) %>% \n                colSums() %>% \n                data.frame()\n\ncolnames(plot_frame) <- \"Num_Users\"\nplot_frame[\"Platform\"] <- row.names(plot_frame)\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Num_Users\"]/num_single_moocers,2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\ncustom_cols_p14 <- plot_frame %>% arrange(desc(Num_Users)) \n\n# Generate and display plot\np14 <- plot_frame %>%\n     ggplot(aes(x = Platform, y = Num_Users)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = total_fill[custom_cols_p14[[\"Platform\"]]]) + \n     ggtitle(\"Single Platform Users\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) + ylab(\"Number of Users\") +\n     scale_x_discrete(limits = custom_cols_p14[[\"Platform\"]])\n\ngg14 <- ggplotly(p14)\nhtmlwidgets::saveWidget(gg14, \"gg14.html\")\ndisplay_html('<iframe src=\"gg14.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "2ee783548b1c53612dd8d839f326d963c7d34e73"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality\n* 44% of single platform MOOCers use Coursera, which is more than 3 times the participation rate of the next most used platform.\n* Relatively few Kagglers use only Udacity or only edX compared to their overall participation rates."
+    },
+    {
+      "metadata": {
+        "_uuid": "a5b565078577c0cd9f75831bf0f4b40ee3f71093"
+      },
+      "cell_type": "markdown",
+      "source": "Now let's turn our attention to users of multiple MOOC platforms. Since Coursera is a dominant presence in the MOOC market, let's make a plot to investigate which secondary platforms Coursera users also tend to use.\n\n#### Expectation:\n* edX will be the most popular secondary platform among Coursera users, since it came out around the same time and has a similar course structure."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "55b0b5867e77a0835f296293cee1824ddf3b1092",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Create dataframe of Coursera users for plotting\nplot_frame <- multiple_choice_Q36[multiple_choice_Q36[\"Coursera\"] == 1,] %>% \n                colSums() %>% \n                data.frame() \n\ncolnames(plot_frame) <- \"Num_Users\"\nplot_frame[\"Platform\"] <- row.names(plot_frame)\ntotal_users <- plot_frame[\"Coursera\", \"Num_Users\"]\nplot_frame <- plot_frame %>% filter(Platform != 'Coursera')\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Num_Users\"]/total_users,2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\ncustom_cols_p15 <- plot_frame %>% \n                    arrange(desc(Num_Users)) \n\np15 <- plot_frame %>%    \n         ggplot(aes(x = Platform, y = Num_Users)) + \n         geom_bar(stat = \"identity\", color = \"black\", fill = total_fill[custom_cols_p15[[\"Platform\"]]]) + \n         ggtitle(\"Alternate Platform Use by Coursera Users\") +\n         geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) +\n         theme(axis.text.x = element_text(angle = 30, hjust = 1)) + ylab(\"Number of Users\") +\n         scale_x_discrete(limits = custom_cols_p15[[\"Platform\"]])\n\ngg15 <- ggplotly(p15)\nhtmlwidgets::saveWidget(gg15, \"gg15.html\")\ndisplay_html('<iframe src=\"gg15.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "aa6f1afb57da4dd3f25a1c5ed106b4304e18fe24"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Udemy, DataCamp, edX and Udacity all have similar participation rates among Coursera users, with about a third of Coursera users participating in each.\n\nCoursera users don't appear to favor any secondary platform in particular, but does the same hold true users of the \"second tier\" platforms?\n\nLet's make a series of plots like the one above for each of the second tier platforms find out..\n\n#### Expectation:\n* edX users will also use Coursera at a high rate, since the platforms are similar."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "8bb961f64d3c30dd2fdbc3c0575567eaea91fa21",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Note second tier and lesser-used platforms\nsecond_tier <- c('Udemy', 'DataCamp', 'Kaggle.Learn', 'Udacity', 'edX')\nlesser_used <- c('Google.Dev','DataQuest','TheSchool.AI')\n\n# Loop over second tier platforms\nfor (MOOC in second_tier) {\n\n# Create dataframe of users of given second tier platform for plotting\nplot_frame <- multiple_choice_Q36[multiple_choice_Q36[MOOC] == 1,] %>% colSums() %>% data.frame() \n\ncolnames(plot_frame) <- \"Num_Users\"\nplot_frame[\"Platform\"] <- row.names(plot_frame)\ntotal_users <- plot_frame[MOOC, \"Num_Users\"]\nplot_frame <- plot_frame %>% filter(Platform != MOOC & !(Platform %in% lesser_used))\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Num_Users\"]/total_users,2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\ncustom_cols_x <- plot_frame %>% arrange(desc(Num_Users)) \n\n# Generate and save plot\nassign(MOOC, plot_frame %>%    \n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = total_fill[custom_cols_x[[\"Platform\"]]]) + \n     ggtitle(paste(MOOC,\"User Alternatives\") ) +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1), axis.title.x = element_blank()) +\n     scale_x_discrete(limits = custom_cols_x[[\"Platform\"]]))\n    \n}\n\n# Display all plots in a grid\ngrid.arrange(Udemy, DataCamp, Kaggle.Learn, Udacity, edX, ncol = 2)",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "20352ef8ccb885cf7673460cf700bb5f275b1bb7"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* 78% of edX and Udacity users on Kaggle also use Coursera.\n* Kaggle Learn users participated in the fewest alternate MOOC platforms.\n\nThis time the plot aligned with my expectations: edX and Udacity users use Coursera at a higher rate than users of other platforms, which makes sense because all three platforms came out around the same time and began as purely free sites. They have each since added various paid course options, but also maintain a healthy amount of free content. Udemy and DataCamp require paying money to access most content, so it makes sense that users of those platforms would be somewhat less likely to branch out, as they have incentive to make the most of their investment by sticking to the platform they pay for.\n\n<br>\n\n## MOOC Platform Importance <a id=\"section2b\"></a>\n\n<br>\n\nNow that we have a sense of which MOOC platforms Kagglers use, let's consider survey question 37: \"On which platforms have you spent the most time?\" Since we know almost 30% of MOOCers on Kaggle use a single platform and that Coursera is the most popular platform, Coursera probably leads in terms of usage time as well. Let's investigate with a plot.\n\n#### Expectation:\n* Coursera will be the most heavily-used platform."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "415a87db5f49858f54282b37a59eedf06d2a8ff8",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Extract survey question 37 data\nmultiple_choice_Q37 <- multiple_choice[2:nrow(multiple_choice), \"Q37\"]\n\nnum_responses <- sum(!is.na(multiple_choice_Q37))\n\n# Prepare dataframe of responses for plotting\nplot_frame <- multiple_choice_Q37 %>% \n                na.omit() %>% \n                table() %>% \n                data.frame() %>% \n                arrange(desc(Freq))\n\ncolnames(plot_frame) <- c(\"Platform\", \"Count\")\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Count\"]/num_responses,2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\ncustom_cols_16 <- plot_frame %>% arrange(desc(Count))\n\n# Generate and display plot\np16 <- plot_frame %>%    \n     ggplot(aes(x=Platform, y = Proportion)) + \n     geom_bar(stat=\"identity\", color=\"black\", fill = total_fill[c(1,3,2,5,6,4,8,10,9,10,10,10)]) + \n     ggtitle(\"Kagglers' Most Used MOOC Platform\") +\n     geom_text(aes(label=Prop_str), position = position_stack(vjust = 0.45), size=3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits=custom_cols_16[[\"Platform\"]])\n        \ngg16 <- ggplotly(p16)\nhtmlwidgets::saveWidget(gg16, \"gg16.html\")\ndisplay_html('<iframe src=\"gg16.html\" width=650 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "62e93280aec3cecce8a3cccb56c3852167ef401f"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Almost 40% of Kagglers spend the most time on Coursera.\n* The paid sites Udemy and DataCamp are cited as most-used platforms more often than the other second tier MOOC platforms.\n\nIt could be that Coursera dominates because it is well known, but when users find alternatives, they end up spending more time on other sites. Let's compare the top 5 MOOC platforms external to Kaggle head to head, only looking at users who actually use each pair of platforms.\n\n#### Expectation:\n* Users of the paid sites Udemy and DataCamp will tend spend more time using those platforms than they do on non-paid sites."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "933a0673d85c204eaae206cd7457c6c74e24d4fd",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Platforms to plot\nplatforms <- c('Coursera', 'Udemy', 'DataCamp', 'Udacity', 'edX')\n\n# Loop over pairs of platforms\nfor (p1 in 1:(length(platforms)-1)){\n    for(p2 in (p1+1):length(platforms)){\n\n# Extract data for users that use both platforms\nuse_both <- (multiple_choice_Q36[,platforms[p1]] + multiple_choice_Q36[,platforms[p2]]) == 2\nplot_frame <- multiple_choice_Q37[use_both,] \n\nnum_use_both <- nrow(plot_frame)\n\n# Prepare dataframe of extracted subset for plotting\nplot_frame <- plot_frame %>% \n        na.omit() %>% \n        table() %>% \n        data.frame() %>% \n        arrange(desc(Freq))\n        \ncolnames(plot_frame) <- c(\"Platform\", \"Count\")\nplot_frame[\"Proportion\"] <- round(plot_frame[\"Count\"]/num_use_both,2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\nplot_frame <- plot_frame %>% filter(Platform == platforms[p1] | Platform == platforms[p2])\n\n# Generate and save plot\nassign(paste(platforms[p1], platforms[p2],sep = \"_vs_\"), plot_frame %>%    \n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = total_fill[c(platforms[p1],platforms[p2])] ) + \n     ggtitle(paste(platforms[p1], \"vs\", platforms[p2])) +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size=3) +\n     scale_x_discrete(limits = c(platforms[p1],platforms[p2])) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) )\n        \n}}\n\n# Display all generated plots in a grid\ngrid.arrange(Coursera_vs_Udemy, Coursera_vs_DataCamp, Coursera_vs_Udacity, Coursera_vs_edX, \n             Udemy_vs_DataCamp, Udemy_vs_Udacity, Udemy_vs_edX, DataCamp_vs_Udacity, DataCamp_vs_edX, \n             Udacity_vs_edX, ncol = 3)",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "5b154de5155bc1cc159bed06adb5a11cdd9fdf4b"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Coursera dominates in head-to-head match-ups of total time usage, even against paid MOOC platforms.\n\nSince Coursera is a long-established platform that was first to the market with quality data science content, it makes sense that Kagglers have used it the most. It would be interesting to know how much Kagglers have used the various MOOC platforms on a shorter time scale, such as the in past 6 months or past year. This would give us a better idea of which platforms are currently popular, rather than potentially skewing results in favor of platforms like Coursera that have offered data science content the longest.\n\n<br>\n\n## MOOC Platform Demographics <a id=\"section2c\"></a>\n<br>\n\n\nNow that we have a sense of overall MOOC platform participation, let's investigate further by breaking it down by the subgroups we explored in the first section: gender, age, country and programming language preference. Let's start with the gender breakdown.\n\n#### Expectation:\n* Platform preferences do not vary by gender."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "6c83b6c3a824920e4d2723ac2446cfa8d94333d4",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe of platform usage by gender\nplot_frame <- multiple_choice_Q36 %>% \n    mutate(Gender = multiple_choice[2:nrow(multiple_choice),]$Q1) %>% \n    filter(Gender == \"Male\" | Gender == \"Female\") %>% \n    gather(key = \"Platform\", value = \"Num_Users\", -\"Gender\") %>%\n    group_by(Gender, Platform) %>% \n    summarise(Counts = sum(Num_Users), \n              Proportion = round(Counts/n(),2),\n              Prop_str = percent_to_string(Proportion))\n\ncustom_cols_p17 <- c('Coursera', 'Udemy', 'DataCamp', 'Udacity', \n                     'edX', 'Kaggle.Learn', 'University', 'Fast.AI')\n\n# Generate and display plot\np17 <- plot_frame %>%    \n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(total_fill[custom_cols_p17],2)) + \n     ggtitle(\"Proportion of Kaggle Users per Platform by Gender\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 4) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = custom_cols_p17) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Gender)\n\ngg17 <- ggplotly(p17)\nhtmlwidgets::saveWidget(gg17, \"gg17.html\")\ndisplay_html('<iframe src=\"gg17.html\" width=800 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "6f4505993411a0a6d83558af412893ef5bb2983c"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* DataCamp is the only platform of the top 6 that female Kagglers participate in at a higher rate males.\n* Males are more than twice as likely to use Fast.AI.\n\nDataCamp is the only subscription-based platform of the bunch, which suggests a monthly fee structure may be more appealing to female Kagglers than males.\n\n\nNext let's investigate MOOC platform participation by Age. We'll drop learning platforms outside of Coursera and the \"second tier\" for readability.\n\n#### Expectation:\n* Platform participation will not change much across age groups, since earlier we saw that overall MOOC participation is steady among Kagglers aged 18 to 60."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "b57b3a92744a5c18f7037dfed6778f0e3ae0b696"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe of platform use by Age\nplot_frame <- multiple_choice_Q36 %>% mutate(Age = multiple_choice[2:nrow(multiple_choice),]$Q2) %>% \n        gather(key = \"Platform\", value = \"Num_Users\", -\"Age\") %>%\n        group_by(Age, Platform)  %>% \n        summarise(Counts = sum(Num_Users), \n              Proportion = round(Counts/n(),2),\n              Prop_str = percent_to_string(Proportion))\n\ncustom_cols_p18 <- c('Coursera', 'Udemy', 'DataCamp', 'Udacity', 'edX', 'Kaggle.Learn')\n\n# Generate and display plot\np18 <- plot_frame %>%    \n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(total_fill[custom_cols_p18],12)) + \n     ggtitle(\"Proportion of Kaggle Users per Platform by Age\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = custom_cols_p18) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Age)\n\ngg18 <- ggplotly(p18)\nhtmlwidgets::saveWidget(gg18, \"gg18.html\")\ndisplay_html('<iframe src=\"gg18.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "6387169323fdb282265ede8ae5d6ad73cad7287c"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOC platform participation rates generally rise with the age from age 18 to 34.\n* MOOC platform participation remains fairly consistent through the middle ages.\n* Platform participation drops off among the oldest Kagglers.\n\nThe fact that MOOC platform usage rises on the whole from 18 to 34 makes sense intuitively, because the more experience you have, the more time you've had to try different things. Younger Kagglers may also be busy with university, giving them less time to branch out and try many different MOOC platforms.\n\n\n<br>\n\nLet's continue our exploration by breaking MOOC platform use down by country. In the interest of readability, we will look at the top 16 countries in terms of total responses recorded.\n\n#### Expectation:\n* Coursera will dominate in total participation across countries."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "d1f6f951df9996c9cdb0d2a459c867435eeb4cfc"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe of MOOC platforms by Country\nplot_frame <- multiple_choice_Q36 %>% mutate(Country = multiple_choice[2:nrow(multiple_choice),]$Q3) %>% \n        filter(Country != \"Other\") %>%\n        gather(key = \"Platform\", value = \"Num_Users\", -\"Country\") %>%\n        group_by(Country, Platform) %>% \n        summarise(Counts = sum(Num_Users), \n              Proportion = round(Counts/n(),2),\n              Prop_str = percent_to_string(Proportion))\n\n# Generate and display plot\np19 <- plot_frame %>% filter(Country %in% top_countries[[\"Country\"]][1:16]) %>%\n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(total_fill[custom_cols_p18],16)) + \n     ggtitle(\"Proportion of Kaggle Users per Platform by Country\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = custom_cols_p18) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Country)\n\ngg19 <- ggplotly(p19)\nhtmlwidgets::saveWidget(gg19, \"gg19.html\")\ndisplay_html('<iframe src=\"gg19.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "a85d69f9c499a35be3ec69bc3010ae6aba1dac0b"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* MOOC platforms have similar participation rates across many countires in North America and Europe, with the USA, Canada, UK and Germany having Coursera participation rates around 40% and second tier platform participation rates in the 15 to 20% range.\n* Russian Kagglers participate in Coursera at the highest rate of any of the top 16 countries, but also have the lowest usage of Udemy and the second lowest usage of DataCamp.\n* Kagglers from China and Japan both report relatively low usage of MOOC platforms outside of Kaggle Learn. \n\nThese observations suggest that paid content and language could be significant barriers to MOOC platform participation in certain countries. \n<br><br>\n\n\nFinally, let's make a plot breaking down MOOC platform participation by programming language preferences. \n\n#### Expectation:\n* Python users will have relatively high participation rates in Coursera and Udacity, since those platforms offer many courses in Python."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "2cbab089bab445c49786fa01f4a34d8201f38ce4"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe of MOOC platforms by programming language\nplot_frame <- multiple_choice_Q36 %>% mutate(Language = multiple_choice[2:nrow(multiple_choice),]$Q17) %>% \n        gather(key = \"Platform\", value = \"Num_Users\", -\"Language\") %>%\n        group_by(Language, Platform) %>% \n        summarise(Counts = sum(Num_Users), \n              Proportion = round(Counts/n(),2),\n              Prop_str = percent_to_string(Proportion))\n\n# Generate and display plot\np20 <- plot_frame %>% filter(Language %in% top_languages[[\"Programming Language\"]][1:12]) %>%\n     ggplot(aes(x = Platform, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(total_fill[custom_cols_p18],12)) + \n     ggtitle(\"Proportion of Kaggle Users per Platform by Language\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = custom_cols_p18) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Language)\n\ngg20 <- ggplotly(p20)\nhtmlwidgets::saveWidget(gg20, \"gg20.html\")\ndisplay_html('<iframe src=\"gg20.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "d97446fc6e50d4a357dcf0fde52431524f209223"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Coursera is the most popular platform across all languages and Udacity participation is the highest among Python users.\n* MOOC platform participation tends to be higher across the board among Python, R and SQL users.\n* 42% of R users also use DataCamp, while only 14% of R users use Udacity.\n\nSince MOOCs tend to use the most popular programming languages to teach data science content, it isn't surprising that Python and R users report relatively high usage of most MOOC platforms. Kagglers who use less common data science languages likely have to rely more heavily upon learning sources like work, university and self-teaching to learn what isn't available on MOOCs."
+    },
+    {
+      "metadata": {
+        "_uuid": "f645f83b29730587c46d59d7794b625b77d13d70"
+      },
+      "cell_type": "markdown",
+      "source": "### Which MOOC Platforms Do Kagglers Use: Key Findings\n<br>\nTo conclude this section, let's summarize our most important observations on MOOC platform use:\n\n* Coursera dominates as the most popular MOOC platform across all demographics.\n* A second tier of MOOC platforms--Udemy, DataCamp, edX, Udacity and Kaggle Learn--have similar participation rates.\n* Most MOOCers learn from more than one online course platform.\n* Of the Demographics we explored, MOOC platform participation varies most noticeably by country."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "43dc589cc5dc89b368fb88bd7ec53e8931def901"
+      },
+      "cell_type": "markdown",
+      "source": "# How Do Kagglers Perceive MOOCs? <a id=\"section3\"></a>"
+    },
+    {
+      "metadata": {
+        "_uuid": "d836d7044d3fbe4243d5765e957ae71c0a68d11c"
+      },
+      "cell_type": "markdown",
+      "source": "Our exploration thus far has shown us where Kagglers learn and which MOOC platforms are most popular. In this final section, we'll explore how Kagglers view the quality of MOOCs as a learning source versus traditional education. To this end, we will investigate survey question 39: \"How do you perceive the quality of online learning platforms as compared to the quality of the education provided by traditional brick and mortar institutions? \"\n\n<br>\n\n## MOOC Perception vs Traditional Education <a id=\"section3a\"></a>\n<br>\n\nLet's begin our exploration of MOOC quality by looking at the totals for each response to question 39, filtering out users who did not respond. Up till now, my experience with Kaggle and MOOCs have given me some idea of what to expect from the data, but I have no idea how people view MOOCs compared to traditional education. Thus for this subsection, I will not note my expectations before making plots."
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "2c1fc238e72d5dc4e50f9d1e31897875e860e094",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Extract question 39 data\nmultiple_choice_Q39 <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>% na.omit()\n\n# Prepare data frame of responses for plotting\nplot_frame <- multiple_choice_Q39 %>% \n                group_by(Q39_Part_1) %>% \n                summarize(Count= n(), \n                          Proportion = round(Count/nrow(multiple_choice_Q39),3),\n                          Prop_str = percent_to_string(Proportion))\n\n# Column names for use in section 3\nsection3_cols <- c(\"Much worse\",\"Slightly worse\",\"Similar quality\", \"Slightly better\", \"Much better\", \"No opinion\")\n\n# Section 3 color scheme\nsection3_fill <- custom_fill[c(5,4,3,2,1,6)]\n\n# Generate and display plot\np21 <- plot_frame %>%\n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color=\"black\", fill= section3_fill) + \n     ggtitle(\"Perception of MOOC Platforms vs Brick and Mortar Institutions\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 4) +\n     theme(axis.text.x = element_text(angle = 30)) +\n     scale_x_discrete(limits = section3_cols) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12))\n\ngg21 <- ggplotly(p21)\nhtmlwidgets::saveWidget(gg21, \"gg21.html\")\ndisplay_html('<iframe src=\"gg21.html\" width=600 height=550 frameborder=\"0\"></iframe>')\n",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "3498bad3421e9f830c1a120c02c8b3945def0f25"
+      },
+      "cell_type": "markdown",
+      "source": "### Observations\n* Over half of Kagglers view MOOCs as being slightly better or much better than brick and mortar institutions.\n* Fewer than 15% of Kagglers view MOOCs as as worse than brick and mortar institutions.\n\nThe plot shows Kagglers generally hold a favorable opinion of online courses vs traditional learning. It isn't clear, however, whether it is the high opinion of MOOC quality that led to this result or a *low* opinion of brick and mortar institutions.  This is not a question we can answer with the data we have at hand, but we can investigate whether perceptions vary based on Kagglers' most used learning sources and MOOC platforms. \n\nLet's plot perceptions of MOOCs again, breaking them down by Kagglers' most-used learning sources."
+    },
+    {
+      "metadata": {
+        "_uuid": "4cf40562e1856206d528ba348323077fb58e5769"
+      },
+      "cell_type": "markdown",
+      "source": "\n"
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "d940ddfebb4c04900fcca965aaf00a900b4dd501",
+        "_kg_hide-input": true
+      },
+      "cell_type": "code",
+      "source": "# Helper function get row max while ignoring NA\nrow_max <- function(row){\n    if (is.na(row[1])){\n        return(NA)\n    }\n    return(which.max(row))\n}\n\n# Get a user's most-used learning source\nmost_used_source <- unlist(apply(multiple_choice_Q35[1:6], FUN = row_max, MARGIN = 1))\n\n# Extract data to a vector (totals_vec) of number of users per most-used learning source\nmQ39_subset1 <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>%\n                mutate(\"Most_Used_Source\" = most_used_source) %>% \n                na.omit()\n\ngroup_totals1 <- mQ39_subset1 %>% \n                group_by(Most_Used_Source) %>% \n                summarize(Total= n())\n\ntotals_vec <- rep(group_totals1$Total, 6)\n\n# Prepare dataframe for plotting\nplot_frame <- mQ39_subset1 %>% \n                group_by(Q39_Part_1, Most_Used_Source) %>% \n                summarize(Count= n()) %>% \n                ungroup() %>% \n                mutate(Proportion = round(Count/totals_vec, 2),\n                       Prop_str = percent_to_string(Proportion),\n                       Most_Used_Source = rep(custom_cols[1:6], 6))\n\n# Generate and display plot\np23 <- plot_frame %>%\n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(section3_fill,6)) + \n     ggtitle(\"Perception of MOOCs vs University by Top Learning Source\") +\n     geom_text(aes(label = Proportion), position = position_stack(vjust = 0.45), size = 3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Most_Used_Source)\n\ngg23 <- ggplotly(p23)\nhtmlwidgets::saveWidget(gg23, \"gg23.html\")\ndisplay_html('<iframe src=\"gg23.html\" width=800 height=600 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "76aa840749c662932f591df3a75e87334c2470a5"
+      },
+      "cell_type": "markdown",
+      "source": "#### Observations\n* 70% of Kagglers who use MOOCs as their primary learning source consider MOOCs to be higher quality than traditional brick and mortar institutions.\n* Kagglers who use university as a primary learning source have mixed opinions of MOOCs, with 35% viewing MOOCs as better than traditional institutions and 25% viewing MOOCs as worse than traditional institutions.\n\n<br>\n\nNext, let's see how perceptions of MOOCs vary according to Kagglers' most-used MOOC platforms. "
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "371694c5780fb55e5d8a6695a7e82b483aff5913"
+      },
+      "cell_type": "code",
+      "source": "platforms = c('Coursera', 'Udemy', 'DataCamp', 'Udacity', 'edX', 'Kaggle Learn')\n\n# Extract data to a vector (totals_vec) of number of users per most-used MOOC platform\nmQ39_subset <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>%\n                mutate(\"Most_Used_Platform\" = multiple_choice_Q37$Q37) %>% \n                na.omit() %>% \n                filter(Most_Used_Platform %in% platforms)\n\ngroup_totals <- mQ39_subset %>% \n                group_by(Most_Used_Platform) %>% \n                summarize(Total= n())\n\ntotals_vec <- rep(group_totals$Total, 6)\n\n# Prepare dataframe for plotting\nplot_frame <- mQ39_subset %>% \n                group_by(Q39_Part_1,Most_Used_Platform) %>% \n                summarize(Count = n()) %>%\n                ungroup() %>%\n                mutate(Proportion = round(Count/totals_vec,2),\n                       Prop_str = percent_to_string(Proportion))\n\n# Generate and display plot\np24 <- plot_frame %>%\n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(section3_fill,6)) + \n     ggtitle(\"Perception of MOOCs vs University by Most Used MOOC Platform\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Most_Used_Platform)\n\ngg24 <- ggplotly(p24)\nhtmlwidgets::saveWidget(gg24, \"gg24.html\")\ndisplay_html('<iframe src=\"gg24.html\" width=800 height=600 frameborder=\"0\"></iframe>')\n",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "db8e8dbe78f389334d09d6221205b6a3d9c11ea3"
+      },
+      "cell_type": "markdown",
+      "source": "#### Observations\n* Coursera and DataCamp users had similar perceptions of MOOC quality with around 55% of users regarding MOOCs as better than brick and mortar institutions.\n* 65% of Udemy and Udacity users perceived MOOCs as higher quality than traditional education.\n\nInterestingly, Kaggle Learn users were the most likely to report MOOCs as being \"slightly better\" than brick and mortar institutions. This perhaps suggests Kaggle Learn has some good content but could benefit from expanding the range and depth of its course offerings to convert more users from the lukewarm \"slightly better\" response to \"much better\".\n\nBased on our earlier explorations, we know that many users of \"second tier\" MOOC platforms use multiple learning portals for taking online courses. Let's investigate how perceptions of MOOCs vs traditional education vary by the number of MOOC platforms Kagglers use."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "418ef1181e6a42261428802aa3575be8fd600e5f"
+      },
+      "cell_type": "code",
+      "source": "mooc_users <- which(rowSums(multiple_choice_Q36) > 0)\nmoocs_used <- rowSums(multiple_choice_Q36[mooc_users,])\n\n# Extract data to a vector (totals_vec) of number of users per number of MOOC platforms used\nmQ39_subset <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][mooc_users,1] %>%\n                mutate(Number_of_Platforms = moocs_used) %>% \n                filter(Number_of_Platforms < 9) %>% \n                na.omit()\n\ngroup_totals <- mQ39_subset %>% \n                group_by(Number_of_Platforms) %>% \n                summarize(Total= n())\n\ntotals_vec <- rep(group_totals$Total, 6)\n\n# Prepare dataframe for plotting\nplot_frame <- mQ39_subset %>% \n                group_by(Q39_Part_1,Number_of_Platforms) %>% \n                summarize(Count= n()) %>% \n                ungroup() %>%\n                mutate(Proportion = round(Count/totals_vec,2),\n                       Prop_str = percent_to_string(Proportion))\n\n# Generate and display plot\np25 <- plot_frame %>%\n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(section3_fill,8)) + \n     ggtitle(\"Perception of MOOCs vs University by Number of MOOC Platforms Used\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 3) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Number_of_Platforms)\n\ngg25 <- ggplotly(p25)\nhtmlwidgets::saveWidget(gg25, \"gg25.html\")\ndisplay_html('<iframe src=\"gg25.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "8fb2313a84f5adceac0c044ff6c8112600c3ed6f"
+      },
+      "cell_type": "markdown",
+      "source": "#### Observations\n*  Fewer than half of respondents who used a single MOOC platform view MOOCs as better than brick and mortar institutions and 11% had no opinion.\n* The more MOOC platforms Kagglers use, the more likely they are to view MOOCs as better than brick and mortar institutions.\n\nThe plot shows that prolific MOOCers were unlikely to favor traditional education vs MOOCs. This suggests that as Kagglers try more MOOC platforms, they increasingly favor MOOCs vs traditional education, although it could be the case that users with low opinions of traditional education are predisposed to trying many MOOC platforms.\n\n<br>\n\n## MOOC Perception Demographics <a id=\"section3b\"></a>\n\n<br>\nWe will finish our exploration of MOOCs by investigating how perceptions of online courses vary by the demographic subgroups we explored in the first two sections: gender, age, country and programming language preference. I expect that groups with high MOOC platform participation rates will also tend to have high opinions of MOOCs.\n\nLet's begin by plotting MOOC perceptions by gender.\n\n#### Expectation:\n* Males will have a higher opinion of MOOCs than females on average, since our earlier explorations showed female Kagglers have higher university participation rates and placed more importance on it."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "ee6401b16e4e8f8ce565ad123af759fb50f321b8"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe for plotting\nplot_frame <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>% \n                mutate(Gender = multiple_choice[2:nrow(multiple_choice),]$Q1) %>% \n                na.omit() %>%\n                filter(Gender == \"Male\" | Gender == \"Female\") %>% \n                group_by(Gender, Q39_Part_1) %>% \n                summarise(Counts = n())\n\ngender_counts <- plot_frame %>% \n                    group_by(Gender) %>% \n                    summarize(Total = sum(Counts))\n\nplot_frame[\"Proportion\"] <- round(plot_frame['Counts']/as.vector(sapply(gender_counts$Total, rep, 6)), 2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\n# Generate and display plot\np26 <- plot_frame %>%    \n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(section3_fill, 2)) + \n     ggtitle(\"Perception of MOOCs vs Brick and Mortar Institutions by Gender\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 4) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) +\n     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(size = 12)) +\n     facet_wrap(~Gender)\n\ngg26 <- ggplotly(p26)\nhtmlwidgets::saveWidget(gg26, \"gg26.html\")\ndisplay_html('<iframe src=\"gg26.html\" width=800 height=550 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "a7826069c8dc46f2bab8eec2ca4ccfd8a590c818"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Male Kagglers held a slightly more positive view of MOOCs vs traditional learning institutions compared to females.\n\n<br>\n\nNext, let's break perceptions down by age.\n\n#### Expectation:\n* Middle aged Kagglers will have a more positive view of MOOCs vs traditional learning than the youngest Kagglers, since our earlier explorations revealed that young Kagglers use relatively few MOOC platforms."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "ec745be75e8d3bc6d84cc246884ae92e418bf9f2"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe for plotting\nplot_frame <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>%\n              mutate(Age = multiple_choice[2:nrow(multiple_choice),]$Q2) %>% \n              na.omit() %>%\n              group_by(Age, Q39_Part_1) %>% \n              summarise(Counts = n())\n\nage_counts <- plot_frame %>% group_by(Age) %>% summarize(Total = sum(Counts))\n\nplot_frame[\"Proportion\"] <- round(plot_frame['Counts']/as.vector(sapply(age_counts$Total, rep, 6)), 2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\n# Generate and display plot\np27 <- plot_frame %>%    \n         ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n         geom_bar(stat = \"identity\", color=\"black\", \n                  fill = c(rep(section3_fill, 11),custom_fill[c(4,3,2,1,6)])) + \n         ggtitle(\"Perception of MOOCs vs Brick and Mortar Institutions by Age\") +\n         geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n         theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n         scale_x_discrete(limits = section3_cols) + xlab(\"MOOC Quality vs Traditional Education\") +\n         theme( axis.title.y = element_blank(), \n               plot.title = element_text(size = 12), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +\n         facet_wrap(~Age)\n\ngg27 <- ggplotly(p27)\nhtmlwidgets::saveWidget(gg27, \"gg27.html\")\ndisplay_html('<iframe src=\"gg27.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "9d25dff24d8a84c95fa93b1b59cc5f97bf3f80e9"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* 64% of users in the 18-21 age group and 58% of users in the 22-24 age group percieved MOOCs as better than traditional education.\n* Opinions of MOOCs were consistent among working-aged Kagglers with about half of users in the 25 to 60 age ranges perceiving MOOCs as better than traditional education.\n\nThe high opinion of MOOCs vs traditional education among younger Kagglers seems surprising given our earlier observations that younger users participate in fewer MOOC platforms and that more platform participation is associated with higher opinions of MOOCs. It goes to show that general trends in the population don't necessarily extend to specific subgroups within the data.\n\nNow let's break perceptions of MOOCs down by country.\n\n#### Expectation:\n* Kagglers from countries with high MOOC participation rates like India and Brazil will have higher than average perceptions of MOOCs vs traditional education."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "7a9592eee3fa8d3a26df23748340496c4e87d231"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe for plotting\nplot_frame <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>% \n                mutate(Country = multiple_choice[2:nrow(multiple_choice),]$Q3) %>% \n                na.omit() \n\nplot_frame <- plot_frame %>% \n                filter(Country %in% top_countries[[\"Country\"]][1:16]) %>% \n                group_by(Country, Q39_Part_1) %>% \n                summarise(Counts = n())\n\ncountry_counts <- plot_frame %>% group_by(Country) %>% summarize(Total = sum(Counts))\n\nplot_frame[\"Proportion\"] <- round(plot_frame['Counts']/as.vector(sapply(country_counts$Total, rep, 6)), 2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\n# Generate and display plot\np28 <- plot_frame %>%    \n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(section3_fill, 16)) + \n     ggtitle(\"Perception of MOOCs vs Brick and Mortar Institutions by Country\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) + xlab(\"MOOC Quality vs Traditional Education\") +\n     theme( axis.title.y = element_blank(), \n     plot.title = element_text(size=12), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +\n     facet_wrap(~Country)\n\ngg28 <- ggplotly(p28)\nhtmlwidgets::saveWidget(gg28, \"gg28.html\")\ndisplay_html('<iframe src=\"gg28.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "1bbdfc554d4d9661052151387800312946eac20c"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Kagglers from India have the highest opinion of MOOCs with 80% perceiving MOOC quality as better than traditional institutions. \n* Of the 16 most represented countries in the survey, Kagglers from the USA held the highest opinion of traditional brick and mortar institutions vs MOOCs with 35% of respondents favoring MOOCs and 27% favoring traditional learning.\n* Users from India, China and Japan reported very low opinions of traditional brick and mortar institutions vs MOOCs, with only 6 percent of respondents from each country favoring traditional education.\n \nIntuitively, we would expect users from countries with ready access to high quality higher education to report higher opinions of brick and mortar institutions. This suggests countries with particularly low views of traditional education, either do not have many high quality brick and mortar institutions or perhaps that there is not adequate access to higher education.\n\n <br>\n \nFinally, let's see how perceptions of MOOCs vary with programming language preferences.\n\n#### Expectation:\n* Users of less popular data science languages will have lower overall opinions of MOOCs vs traditional education than users of Python, R and SQL."
+    },
+    {
+      "metadata": {
+        "_kg_hide-input": true,
+        "trusted": true,
+        "_uuid": "95e8088650cf0ddefd5caa7169b6ee539a4d7757"
+      },
+      "cell_type": "code",
+      "source": "# Prepare dataframe for plotting\nplot_frame <- multiple_choice[2:nrow(multiple_choice), startsWith(colnames(multiple_choice), \"Q39\")][,1] %>% \n                mutate(Language = multiple_choice[2:nrow(multiple_choice),]$Q17) %>% \n                na.omit() \n\nplot_frame <- plot_frame %>% \n                filter(Language %in% top_languages[[\"Programming Language\"]][1:12]) %>% \n                group_by(Language, Q39_Part_1) %>% \n                summarise(Counts = n())\n\nlanguage_counts <- plot_frame %>% group_by(Language) %>% summarize(Total = sum(Counts))\n\nplot_frame[\"Proportion\"] <- round(plot_frame['Counts']/as.vector(sapply(language_counts$Total, rep, 6)), 2)\nplot_frame[\"Prop_str\"] <- percent_to_string(plot_frame[[\"Proportion\"]])\n\n# Generate and display plot\np29 <- plot_frame %>%    \n     ggplot(aes(x = Q39_Part_1, y = Proportion)) + \n     geom_bar(stat = \"identity\", color = \"black\", fill = rep(custom_fill[c(5,4,3,2,1,6)], 12)) + \n     ggtitle(\"Perception of MOOCs vs Brick and Mortar Institutions by Language\") +\n     geom_text(aes(label = Prop_str), position = position_stack(vjust = 0.45), size = 2) +\n     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +\n     scale_x_discrete(limits = section3_cols) + xlab(\"MOOC Quality vs Traditional Education\") +\n     theme( axis.title.y = element_blank(), \n     plot.title = element_text(size = 12), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +\n     facet_wrap(~Language)\n\ngg29 <- ggplotly(p29)\nhtmlwidgets::saveWidget(gg29, \"gg29.html\")\ndisplay_html('<iframe src=\"gg29.html\" width=800 height=800 frameborder=\"0\"></iframe>')",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "_uuid": "0fffbae1c58d1c4958a8d7491488201e55d6b3b5"
+      },
+      "cell_type": "markdown",
+      "source": "#### Reality:\n* Kagglers view MOOCs as higher quality than traditional education regardless of programming language preference."
+    },
+    {
+      "metadata": {
+        "_uuid": "66139171fe280d13711acfecfefa431d67f0e95d"
+      },
+      "cell_type": "markdown",
+      "source": "### Perception of MOOCs: Key Findings\n<br>\nLet's summarize our key findings about the perception of MOOCs:\n<br>\n* Over half of Kagglers view MOOCs as better quality than traditional education.\n* Perception of MOOC quality is highest among Kagglers who use many MOOC platforms.\n* Young Kagglers are the most likely to favor MOOCs over traditional education.\n* Kagglers from India, China and Japan held especially favorable opinions of MOOCs vs traditional education."
+    },
+    {
+      "metadata": {
+        "_uuid": "490a76ecad1d60b3f9a62b1d835d6bc3099dc625"
+      },
+      "cell_type": "markdown",
+      "source": "# Conclusion <a id=\"outro\"></a>"
+    },
+    {
+      "metadata": {
+        "trusted": true,
+        "_uuid": "326bcedb6ba3902ed0bb889653ca3c98a9bbc735"
+      },
+      "cell_type": "markdown",
+      "source": "MOOCs have come a long way since I took my first programming course on OpenCourseWare. As the accessibility of machine learning MOOCs has grown, they've established themselves as a staple learning source among the data science community, used by over 70% of Kagglers. Coursera is a dominant force in the MOOC market, with more than twice as many users on Kaggle than any other platform, but many MOOCers use multiple platforms. Kagglers also generally have positive perceptions of the quality of MOOCs versus traditional brick and mortar institutions, which is good news for online course providers as they seek to find sustainable business models that strike the right balance between free and paid content.\n\nOnline courses let you learn wherever you are, at your own pace, to fulfill your personal learning goals. They democratize education in an unprecedented way, allowing anyone with interest and internet access to take courses taught by top universities and industry experts. My hope is that our exploration of MOOC usage on Kaggle has given you new insights into the role of online courses in data science education and piqued your curiosity to try a new course, explore a new platform or perhaps to take a MOOC for the first time. There's little to lose and a lot to learn!\n"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "R",
+      "language": "R",
+      "name": "ir"
+    },
+    "language_info": {
+      "mimetype": "text/x-r-source",
+      "name": "R",
+      "pygments_lexer": "r",
+      "version": "3.4.2",
+      "file_extension": ".r",
+      "codemirror_mode": "r"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 1
+}
